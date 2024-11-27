@@ -58,11 +58,18 @@ class RawPresenter extends Presenter {
 
         $data = '';
 
-        foreach ($response->getData() as $k => $v) {
+        $array = $response->getData();
+        $is_list = array_is_list($array);
+
+        foreach ($array as $k => $v) {
             if (is_array($v)) {
                 $v = json_encode($v);
             }
-            $data .= "$k = $v\n";
+            if ($is_list) {
+                $data .= "$v\n";
+            } else {
+                $data .= "$k = $v\n";
+            }
         }
         if ($response->getTemplate() != "") {
             $data .= "Data template: " . $response->getTemplate();

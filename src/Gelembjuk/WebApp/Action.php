@@ -28,10 +28,21 @@ class Action {
         }
         $this->request = $request;
     }
+    public function withDefaultController($controllerClass)
+    {
+        $this->defaultControllerClass = $controllerClass;
+        return $this;
+    }
+    public function withRequest(Request $request)
+    {
+        $this->request = $request;
+        return $this;
+    }
 
     public function action(): Presenter
     {
         $response = null;
+        $exception = null;
 
         try {
             list($controller, $method_name) = $this->buildControllerForAction();
@@ -48,9 +59,18 @@ class Action {
             $this->context->errorLogger->error($e->getTraceAsString());
 
             $response = new ErrorResponse("", $e);
-            
+
+            if ($e instanceof \Exception) {
+                $exception = $e;
+            }
         } 
         $present_format = $this->decideOutputFormat();
+
+        if ($exception !== null) {
+            $customResponse = $this->exceptionToResponse($exception, $present_format);
+
+			$response = $customResponse ?? $response;
+        }
 
         try {
             $presenter = Present\Builder::createPresenter($this->context, $response, $present_format);
@@ -101,7 +121,10 @@ class Action {
         }
 
         if ($parsed_controller === null) {
-            return [null, null];
+            if ($this->defaultControllerClass === null) {
+                return [null, null];
+            }
+            $parsed_controller = [$this->defaultControllerClass, $this->request->getActionMethod(),''];
         }
 
         $cObj = new $parsed_controller[0]($this->context, $this->request);
@@ -111,6 +134,13 @@ class Action {
 
         return [$cObj, $controller_method];
     }
+
+    protected function exceptionToResponse(\Exception $e, $present_format): ?Response
+	{
+		// The method for child application to convert action exceptions to some non error responses
+		// For example, on some exception we want to redirect the user to a different page instead to display the error
+		return null;
+	}
 
     private function getEndpoint()
     {
@@ -173,7 +203,7 @@ class Action {
             $method_name = ucfirst(strtolower($method_name));
         }
 
-        $method_prefixes = ['post', 'put', 'delete', 'head', 'options', 'get', 'patch'];
+        $method_prefixes = ['post', 'put', 'delete', 'head', 'options', 'get', 'patch', 'do'];
 
         if (in_array(strtolower($method), $method_prefixes)) {
             return strtolower($method) . $method_name;
@@ -190,11 +220,5 @@ class Action {
         } else {
             $this->endpointsIndex[$endpoint] = [$controller_class, $method_name];
         }
-    }
-
-    public function withDefaultController($controllerClass)
-    {
-        $this->defaultControllerClass = $controllerClass;
-        return $this;
     }
 }

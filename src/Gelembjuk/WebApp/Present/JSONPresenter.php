@@ -29,6 +29,8 @@ class JSONPresenter extends Presenter {
             $jsonStr = json_encode($data);
         }
 
+        $this->appendHeader('Content-Length', strlen($jsonStr));
+
         $this->data = $jsonStr;
         $this->dataType = self::DATA_TYPE_STRING;
         return ;
@@ -41,7 +43,7 @@ class JSONPresenter extends Presenter {
         }
         $this->setHttpCodeAndString($response->getHttpCode(), "500 Internal Server Error");
         $this->appendHeader('Content-Type', 'application/json');
-        
+                
         $jsonData = ['error' => $response->getMessage()];
 
         if ($this->context->config->traceErrors) {
@@ -55,6 +57,10 @@ class JSONPresenter extends Presenter {
         } else {
             $jsonStr = json_encode($jsonData);
         }
+
+        $this->context->getLogger('error')->debug($jsonStr);
+
+        $this->appendHeader('Content-Length', strlen($jsonStr));
 
         $this->data = $jsonStr;
         $this->dataType = self::DATA_TYPE_STRING;
@@ -71,18 +77,44 @@ class JSONPresenter extends Presenter {
             $this->dataType = self::DATA_TYPE_STRING;
             return ;
         }
-        if (empty($response->getData())) {
-            $jsonStr = '{}';
+        $dataToEncode = $response->getData();
 
-        } else if ($this->isPretty()) {
-            $jsonStr = json_encode($response->getData(), JSON_PRETTY_PRINT);
-            
-        } else {
-            $jsonStr = json_encode($response->getData());
-        }
+        $attempt = 0;
+
+        do {
+            try {
+                if (empty($dataToEncode)) {
+                    $jsonStr = '{}';
+
+                } else if ($this->isPretty()) {
+                    $jsonStr = json_encode($dataToEncode, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR);
+                    
+                } else {
+                    $jsonStr = json_encode($dataToEncode, JSON_THROW_ON_ERROR);
+                }
+                // no exception, exit the loop
+                break;
+            } catch (\Throwable $e) {
+                $dataToEncode = $this->utf8izeBrokenData($dataToEncode);
+                $jsonStr = '{"error": "Error encoding data to JSON", "message": "'.$e->getMessage().'"}';
+            }
+        } while($attempt++ < 1);
+
+        $this->appendHeader('Content-Length', strlen($jsonStr));
 
         $this->data = $jsonStr;
         $this->dataType = self::DATA_TYPE_STRING;
         return ;
+    }
+    private function utf8izeBrokenData($mixed) 
+    {
+        if (is_array($mixed)) {
+            foreach ($mixed as $key => $value) {
+                $mixed[$key] = $this->utf8izeBrokenData($value);
+            }
+        } elseif (is_string($mixed)) {
+            return mb_convert_encoding($mixed, "UTF-8", "UTF-8");
+        }
+        return $mixed;
     }
 }

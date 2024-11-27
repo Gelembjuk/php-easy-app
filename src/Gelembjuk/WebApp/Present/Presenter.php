@@ -41,7 +41,7 @@ abstract class Presenter {
     {
         $this->context = $context;
         $this->response = $response;
-        $this->logger = new \Psr\Log\NullLogger(); // Assuming you have a PSR-3 logger
+        $this->logger = $this->context->getLogger('presenter'); // Assuming you have a PSR-3 logger
 
         $this->settings = $context->getPresenterSettings($this->format_identifier);
     }

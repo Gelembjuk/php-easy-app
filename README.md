@@ -1,121 +1,57 @@
 ## WebApp
 
-PHP Package for Rapid Web Development with HTML, AJAX, and REST API Functionality
+PHP Package for building Web applications as fast as possible.
 
 This package enables you to create web services efficiently, allowing you to build robust solutions with minimal development time.
+
+The idea is that a developer should spent minimum time on infrastructure of the application, reading a request and building the response. The developer should think only one the buisiness logic of the application. But should not care a lot about how to parse a request and how to build correct response format based on a request context.
+
+**Example**
+
+One of use cases.
+
+Sometimes your application raises NotFoundException. Depending on a request you will want to return a JSON document with the error description, but in other case it would be a HTML page with the error. But yet on other case it will be a redirect to some other page. 
+
+This application automates this. The format of the response is decided in the smart way depending on a context. 
 
 
 
 ### Installation
-Using composer: [gelembjuk/webapp_php](http://packagist.org/packages/gelembjuk/webapp_php) ``` require: {"gelembjuk/webapp_php": "*"} ```
+Using composer: [gelembjuk/php-easy-app](http://packagist.org/packages/gelembjuk/php-easy-app) ``` require: {"gelembjuk/php-easy-app": "*"} ```
 
 ```
-composer require gelembjuk/webapp_php
+composer require gelembjuk/php-easy-app
 ```
 
 ### Hello World!
 
-```
+```php
+<?php
 
+require '../src/vendor/autoload.php';
+
+class HelloWorld extends \Gelembjuk\WebApp\Controller {
+	protected function get()
+	{
+		return "Hello World!";
+	}
+}
+
+$action = new \Gelembjuk\WebApp\Action();
+$action->context->config->traceErrors = true;
+$action->
+	withDefaultController(HelloWorld::class)->
+	action()->
+	standardOutput();
 ```
 
 ### Usage
 
-This is simplest "one file" example of an app usage. On practive you will have separate folders for Controllers,Views and Models
+This is simplest "one file" example of an app usage. On a practice you will have smoe more files/folders. But it will be same standard structure for all our apps.
 
 ```php
 
-// ==================== CONFIGURATION ==================================
-// path to your composer autoloader
-require ('vendor/autoload.php');
 
-$thisdirectory = dirname(__FILE__) . '/'; // get parent directory of this script
-
-// application settings
-class appConfig {
-    public $offline = false;
-    public $loggingfilter = 'all'; // log everything
-}
-
-// application options
-$options = array(
-    'webroot' => $thisdirectory,
-    'tmproot' => $thisdirectory.'tmp/',
-    'relativebaseurl' => '/example/2/', // this option is useful only if default Router is used.
-    'loggerstandard' => true,
-    'applicationnamespace' => '\\',
-    'defaultcontrollername' => 'MyController',
-    'htmltemplatespath' => $thisdirectory.'template/',
-    'htmltemplatesoptions' => array('extension' => 'htm') // our templates will have HTML extension
-);
- 
-// ==================== APPLICATION LOGIC ==================================
-// controller class
-class MyController extends \Gelembjuk\WebApp\Controller {
-    // viewer name.
-    protected $defviewname = 'MyViewer';
-
-    // ========= the only action of the controler
-    protected function doSendmessage() {
-        // do somethign to send message
-        // best is to use a model 
-        
-        // if this was JSON request then we will return success status
-        // if normal web request then we will redirect to home page
-        return array('success',$this->makeUrl(array('message' => 'Successfully sent')));
-    }
-    
-    
-}
-
-// view class
-class MyViewer extends \Gelembjuk\WebApp\View{
-    protected function view() {
-        // just display default page
-        $this->htmltemplate = 'default';
-        
-        $this->viewdata['welcomemessage'] = 'Hello there!';
-        
-        return true;
-    }
-    protected function viewForm() {
-        // display form page
-        $this->htmltemplate = 'form';
-        return true;
-    }
-    protected function viewData() {
-        // display form page
-        $this->htmltemplate = 'data'; // template name
-        
-        // usually it can be loaded from a Model
-        $this->viewdata['data'] = array(
-            array('name'=>'User1','email'=>'email1@gmail.com'),
-            array('name'=>'User2','email'=>'email2@gmail.com'),
-            array('name'=>'User3','email'=>'email3@gmail.com'),
-        );
-        
-        return true;
-    }
-    protected function beforeDisplay() {
-        // set some extra information for any page
-        
-        if ($this->responseformat == 'html') {
-            // only if this is html format to display
-
-            $this->viewdata['applicationtitle'] = 'Demo application';
-            
-            // include more data that should be displayed on any page of a site
-            
-        }
-        return true;
-    }
-}
-
-$application = \Gelembjuk\WebApp\Application::getInstance();
-
-$application->init(new appConfig(),$options);
-
-$application->action();
 
 ```
 

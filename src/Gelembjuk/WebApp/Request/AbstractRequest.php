@@ -22,6 +22,7 @@ class AbstractRequest {
     protected $data_stream = null;
     protected $data_stream_size = 0;
     protected $endpoint = "";
+    protected $action_method = '';
     protected $request_method = "GET";
     protected $present_format = null; // by default it is empty, it means - auto selection
     protected $cookies = [];
@@ -70,6 +71,12 @@ class AbstractRequest {
         return $this;
     }
 
+    public function withActionMethod(string $actionMethod)
+    {
+        $this->action_method = $actionMethod;
+        return $this;
+    }
+
     public function setPriorityData(array $data)
     {
         $this->priority_data = $data;
@@ -113,6 +120,11 @@ class AbstractRequest {
         }
 
         return $this->endpoint;
+    }
+
+    public function getActionMethod():string 
+    {
+        return $this->action_method;
     }
 
     public function getHost()

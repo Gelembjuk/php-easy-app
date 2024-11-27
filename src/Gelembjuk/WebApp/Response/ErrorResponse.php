@@ -36,7 +36,7 @@ class ErrorResponse extends Response
         return $this->message;
     }
 
-    public function getException(): \Throwable
+    public function getException(): ?\Throwable
     {
         return $this->exception;
     }
