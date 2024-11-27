@@ -1,0 +1,19 @@
+{
+    "name": "gelembjuk/webapp",
+    "description": "PHP MVC Package for rapid building of web sites with HTML/AJAX/RESP API functionality",
+    "require": {
+        "gelembjuk/locale":"1.*"
+    },
+    "require-dev":{},
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Roman Gelembjuk",
+            "email": "roman@gelembjuk.com"
+        }
+    ],
+    "autoload": {
+        "psr-0": { "Gelembjuk":"src/" }
+    },
+    "minimum-stability": "stable"
+}
