@@ -1,8 +1,8 @@
 {
-    "name": "gelembjuk/webapp",
-    "description": "PHP MVC Package for rapid building of web sites with HTML/AJAX/RESP API functionality",
+    "name": "gelembjuk/php-easy-app",
+    "description": "ThePHP Package for building Web applications as fast as possible. This package enables you to create web services efficiently, allowing you to build robust solutions with minimal development time.",
     "require": {
-        "gelembjuk/locale":"1.*"
+        "psr/log":"3.*"
     },
     "require-dev":{},
     "license": "MIT",

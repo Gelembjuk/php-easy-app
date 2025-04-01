@@ -1,4 +1,4 @@
-## WebApp
+## PHP EasyApp
 
 PHP Package for building Web applications as fast as possible.
 
@@ -30,14 +30,14 @@ composer require gelembjuk/php-easy-app
 
 require '../src/vendor/autoload.php';
 
-class HelloWorld extends \Gelembjuk\WebApp\Controller {
+class HelloWorld extends \Gelembjuk\EasyApp\Controller {
 	protected function get()
 	{
 		return "Hello World!";
 	}
 }
 
-$action = new \Gelembjuk\WebApp\Action();
+$action = new \Gelembjuk\EasyApp\Action();
 $action->context->config->traceErrors = true;
 $action->
 	withDefaultController(HelloWorld::class)->
