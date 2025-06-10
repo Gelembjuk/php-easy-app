@@ -4,10 +4,10 @@ namespace Gelembjuk\EasyApp\Response;
 
 class ErrorResponse extends Response
 {
-    protected $message;
-    protected $exception;
+    protected string $message;
+    protected ?\Throwable $exception;
 
-    public function __construct(string $message, \Throwable $exception = null, int $httpCode = 0)
+    public function __construct(string $message, ?\Throwable $exception = null, int $httpCode = 0)
     {
         parent::__construct($httpCode);
         $this->message = $message;
