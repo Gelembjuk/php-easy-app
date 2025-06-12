@@ -3,7 +3,7 @@
 namespace Gelembjuk\EasyApp\Request;
 
 class CommandLine extends AbstractRequest {
-    public function __construct($default_method = 'GET')
+    public function __construct($default_method = 'GET', array $data = [])
     {
         parent::__construct();
 
@@ -36,6 +36,10 @@ class CommandLine extends AbstractRequest {
             } elseif ($index == 1) {
                 $this->data['command'] = $arg;
             }
+        }
+        // if there is some custom data, add it to the request and overwrite existing data.
+        foreach ($data as $key => $value) {
+            $this->data[$key] = $value;
         }
     }
     public function getScriptName(): string 
