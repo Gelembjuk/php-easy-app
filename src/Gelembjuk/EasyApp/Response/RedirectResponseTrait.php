@@ -5,7 +5,7 @@ namespace Gelembjuk\EasyApp\Response;
 trait RedirectResponseTrait
 {
     protected $url;
-    protected $message;
+    protected string $message;
 
     public function getUrl()
     {
