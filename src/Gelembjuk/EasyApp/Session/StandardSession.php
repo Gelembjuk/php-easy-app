@@ -55,7 +55,11 @@ class StandardSession implements SessionInterface {
         $this->start();
         session_destroy();
     }
-    
+    public function finishWrite()
+    {
+        $this->start();
+        session_write_close();
+    }
     public function getUserID(): string 
     {
         $userid = $this->get('userid');

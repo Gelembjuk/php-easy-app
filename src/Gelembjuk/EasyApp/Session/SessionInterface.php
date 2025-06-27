@@ -9,6 +9,7 @@ interface SessionInterface {
     public function clear();
     public function start();
     public function destroy();
+    public function finishWrite();
     public function getUserID(): string;
     public function setUserID(string $userid);
     public function isLoggedIn(): bool;

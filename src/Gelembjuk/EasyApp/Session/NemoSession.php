@@ -41,7 +41,10 @@ class NemoSession implements SessionInterface {
         $this->session = [];
         $this->userid = "";
     }
-    
+    public function finishWrite()
+    {
+        // nothing to do
+    }
     public function getUserID(): string 
     {
         return $this->userid;
