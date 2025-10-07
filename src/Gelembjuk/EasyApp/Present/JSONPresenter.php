@@ -5,6 +5,7 @@ namespace Gelembjuk\EasyApp\Present;
 use \Gelembjuk\EasyApp\Response\ErrorResponse as ErrorResponse;
 use \Gelembjuk\EasyApp\Response\DataResponse as DataResponse;
 use \Gelembjuk\EasyApp\Response\RedirectResponse as RedirectResponse;
+use \Gelembjuk\EasyApp\Exceptions\InvalidArgumentException as InvalidArgumentException;
 
 class JSONPresenter extends Presenter {
     const OUTPUT_FORMAT = "json";
@@ -46,10 +47,17 @@ class JSONPresenter extends Presenter {
                 
         $jsonData = ['error' => $response->getMessage()];
 
+        $exception = $response->getException();
+
         if ($this->context->config->traceErrors) {
-            if ($response->getException() !== null) {
-                $jsonData['traceback'] = $response->getException()->getTrace();
+            if ($exception !== null) {
+                $jsonData['traceback'] = $exception->getTrace();
             }
+        }
+        $jsonData['reason_code'] = "";
+
+        if ($exception instanceof InvalidArgumentException) {
+            $jsonData['reason_code'] = $exception->getReasonCode();
         }
 
         if ($this->isPretty()) {
