@@ -81,7 +81,15 @@ class DataResponse extends Response implements \ArrayAccess
         $this->baseTemplate = $baseTemplate;
         return $this;
     }
-
+    public function append(array | PublicModel $data)
+    {
+        if ($data instanceof PublicModel) {
+            $data = $data->toArray();
+        }
+        foreach ($data as $key => $value) {
+            $this->data[$key] = $value;
+        }
+    }
     public function set($key, $value)
     {
         $this->data[$key] = $value;
