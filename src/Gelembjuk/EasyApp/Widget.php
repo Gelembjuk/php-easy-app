@@ -6,6 +6,7 @@ use \Gelembjuk\EasyApp\Request\AbstractRequest as Request;
 use \Gelembjuk\EasyApp\Response\Response as Response;
 use \Gelembjuk\EasyApp\Response\ErrorResponse as ErrorResponse;
 use \Gelembjuk\EasyApp\Response\DataResponse as DataResponse;
+use \Gelembjuk\EasyApp\Models\PublicModel;
 
 use \Gelembjuk\EasyApp\Present\Builder as Builder;
 
@@ -70,7 +71,7 @@ abstract class Widget {
         return '';
     }
 
-    protected function prepareData(): array|string
+    protected function prepareData(): array|string|PublicModel
     {
         // This method is used to prepare the data for the widget
         // It can be reloaded in a child class to prepare the data (it is optional, only if there is no custom method)

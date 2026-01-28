@@ -2,9 +2,11 @@
 
 namespace Gelembjuk\EasyApp\Response;
 
+use \Gelembjuk\EasyApp\Models\PublicModel;
+
 class DataResponse extends Response implements \ArrayAccess   
 {
-    protected $data;
+    protected array $data;
     protected $template;
     /**
      * @var string|null
@@ -15,11 +17,17 @@ class DataResponse extends Response implements \ArrayAccess
     protected ?string $baseTemplate;
     protected $completeResponse;
 
-    public function __construct(array $data = [], $template = "", ?string $completeResponse = null, $httpCode = 0)
+    public function __construct(array | PublicModel $data = [], $template = "", ?string $completeResponse = null, $httpCode = 0)
     {
         parent::__construct($httpCode);
-        $this->data = $data;
+        $this->withData($data);
         $this->template = $template;
+
+        if (empty($this->template) && $data instanceof PublicModel && $template = $data->getTemplate()) {
+            // set template from the public model if not set explicitly
+            $this->template = $template;
+        }
+
         $this->completeResponse = $completeResponse;
     }
 
@@ -32,9 +40,13 @@ class DataResponse extends Response implements \ArrayAccess
         $this->completeResponse = $completeResponse;
         return $this;
     }
-    public function withData(array $data)
+    public function withData(array | PublicModel $data)
     {
-        $this->data = $data;
+        if ($data instanceof PublicModel) {
+            $this->data = $data->toArray();
+        } else {
+            $this->data = $data;
+        }
         return $this;
     }
 
@@ -69,7 +81,15 @@ class DataResponse extends Response implements \ArrayAccess
         $this->baseTemplate = $baseTemplate;
         return $this;
     }
-
+    public function append(array | PublicModel $data)
+    {
+        if ($data instanceof PublicModel) {
+            $data = $data->toArray();
+        }
+        foreach ($data as $key => $value) {
+            $this->data[$key] = $value;
+        }
+    }
     public function set($key, $value)
     {
         $this->data[$key] = $value;

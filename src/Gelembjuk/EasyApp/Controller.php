@@ -276,6 +276,9 @@ class Controller {
 		if (is_string($response)) {
 			return new DataResponse([], '', $response);
 		}
+		if ($response instanceof \Gelembjuk\EasyApp\Models\PublicModel) {
+			return new DataResponse($response);
+		}
 		if ($response === null) {
 			return new NoContentResponse();
 		} 
